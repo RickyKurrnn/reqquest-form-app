@@ -69,32 +69,32 @@
                     <h6 class="fw-bold">Requested By:</h6>
 
                     <label class="form-label">Name</label>
-                    <input type="text" name="req_name" class="form-control mb-2">
+                    <input type="text" name="requested_by_name" class="form-control mb-2">
 
                     <label class="form-label">Position</label>
-                    <input type="text" name="req_position" class="form-control mb-2">
+                    <input type="text" name="requested_by_position" class="form-control mb-2">
 
                     <label class="form-label">Date</label>
-                    <input type="date" name="req_date" class="form-control mb-2">
+                    <input type="date" name="requested_at" class="form-control mb-2">
 
                     <label class="form-label">Add Signature</label>
-                    <input type="file" name="req_signature" class="form-control">
+                    <input type="file" name="requested_by_signature_path" class="form-control">
                 </div>
 
                 <div class="col-md-6 mb-4">
                     <h6 class="fw-bold">Approved By:</h6>
 
                     <label class="form-label">Name</label>
-                    <input type="text" name="app_name" class="form-control mb-2">
+                    <input type="text" name="approved_by_name" class="form-control mb-2">
 
                     <label class="form-label">Position</label>
-                    <input type="text" name="app_position" class="form-control mb-2">
+                    <input type="text" name="approved_by_position" class="form-control mb-2">
 
                     <label class="form-label">Date</label>
-                    <input type="date" name="app_date" class="form-control mb-2">
+                    <input type="date" name="approved_at" class="form-control mb-2">
 
                     <label class="form-label">Add Signature</label>
-                    <input type="file" name="app_signature" class="form-control">
+                    <input type="file" name="approved_by_signature_path" class="form-control">
                 </div>
             </div>
 
@@ -104,32 +104,32 @@
                     <h6 class="fw-bold">Executed By:</h6>
 
                     <label class="form-label">Name</label>
-                    <input type="text" name="exe_name" class="form-control mb-2">
+                    <input type="text" name="executed_by_name" class="form-control mb-2">
 
                     <label class="form-label">Position</label>
-                    <input type="text" name="exe_position" class="form-control mb-2">
+                    <input type="text" name="executed_by_position" class="form-control mb-2">
 
                     <label class="form-label">Date</label>
-                    <input type="date" name="exe_date" class="form-control mb-2">
+                    <input type="date" name="executed_at" class="form-control mb-2">
 
                     <label class="form-label">Add Signature</label>
-                    <input type="file" name="exe_signature" class="form-control">
+                    <input type="file" name="executed_by_signature_path" class="form-control">
                 </div>
 
                 <div class="col-md-6 mb-4">
                     <h6 class="fw-bold">Acknowledged By:</h6>
 
                     <label class="form-label">Name</label>
-                    <input type="text" name="ack_name" class="form-control mb-2">
+                    <input type="text" name="acknowledged_by_name" class="form-control mb-2">
 
                     <label class="form-label">Position</label>
-                    <input type="text" name="ack_position" class="form-control mb-2">
+                    <input type="text" name="acknowledged_by_position" class="form-control mb-2">
 
                     <label class="form-label">Date</label>
-                    <input type="date" name="ack_date" class="form-control mb-2">
+                    <input type="date" name="acknowledged_at" class="form-control mb-2">
 
                     <label class="form-label">Add Signature</label>
-                    <input type="file" name="ack_signature" class="form-control">
+                    <input type="file" name="acknowledged_by_signature_path" class="form-control">
                 </div>
             </div>
 
@@ -144,9 +144,9 @@
                 <div class="col-md-6">
                     <label class="form-label">Type</label>
                     <select name="type" class="form-select">
-                        <option disabled selected>Select Internal/External</option>
-                        <option>Internal</option>
-                        <option>External</option>
+                        <option disabled selected>Select Open/Close</option>
+                        <option>Open</option>
+                        <option>Close</option>
                     </select>
                 </div>
 
