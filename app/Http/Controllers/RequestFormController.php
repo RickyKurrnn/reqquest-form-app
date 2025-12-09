@@ -2,60 +2,67 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\RequestForm;          // <--- BARIS INI DITAMBAHKAN
-use App\Models\RequestSignature;      // <--- BARIS INI DITAMBAHKAN
 use Illuminate\Http\Request;
 
 class RequestFormController extends Controller
 {
+    /**
+     * Halaman form (Add New Form Request)
+     * NOTE: kita pakai view('form') -> resources/views/form.blade.php
+     */
     public function create()
     {
-        return view('request_form.create');
+        return view('form');
     }
 
+    /**
+     * Simpan data dari form ke session (demo)
+     */
     public function store(Request $request)
     {
-        // Validasi
         $data = $request->validate([
-            'request_type' => 'required',
-            'application_name' => 'required',
-            'request_date' => 'required|date',
-            'existing_condition' => 'nullable',
-            'expectations' => 'nullable',
-            'type' => 'required',
-            'notes' => 'nullable',
-            
-            'signatures.*.role' => 'required',
-            'signatures.*.name' => 'nullable',
-            'signatures.*.position' => 'nullable',
-            'signatures.*.date' => 'nullable|date',
-            'signatures.*.file' => 'nullable|file'
+            'request_type'         => 'nullable|string',
+            'document_number'      => 'nullable|string',
+            'application_name'     => 'nullable|string',
+            'request_date'         => 'nullable|string',
+            'existing_condition'   => 'nullable|string',
+            'expectations'         => 'nullable|string',
+            'requested_by_name'    => 'nullable|string',
+            'requested_by_position'=> 'nullable|string',
+            'notes'                => 'nullable|string',
         ]);
 
-        // Insert main form
-        $form = RequestForm::create($data);
+        // ambil array saat ini dari session
+        $rows = session('requests_demo', []);
 
-        // Process signatures
-        if ($request->has('signatures')) {
-            foreach ($request->signatures as $sig) {
+        $newNo = count($rows) + 1;
+        $rows[] = [
+            'no' => $newNo,
+            'requestDate' => $data['request_date'] ?? '',
+            'taskReceived' => $data['request_type'] ?? '',
+            'application' => $data['application_name'] ?? '',
+            'fileName' => '-', // demo placeholder
+            'fileUrl' => '#',
+            'task' => '',
+            'requestor' => $data['requested_by_name'] ?? '',
+            'approvedBy' => '',
+            'executedBy' => '',
+            'acknowledgedBy' => '',
+            'status' => 'Pending',
+            'notes' => $data['notes'] ?? '',
+        ];
 
-                $path = null;
-                if (isset($sig['file'])) {
-                    $path = $sig['file']->store('signatures', 'public');
-                }
+        session(['requests_demo' => $rows]);
 
-                RequestSignature::create([
-                    'request_form_id' => $form->id,
-                    'role' => $sig['role'],
-                    'name' => $sig['name'],
-                    'position' => $sig['position'],
-                    'date' => $sig['date'],
-                    'signature_path' => $path,
-                ]);
-            }
-        }
+        return redirect()->back()->with('success', 'Request saved (demo).');
+    }
 
-        return redirect()->back()->with('success', 'Data berhasil disimpan');
+    /**
+     * API: kembalikan JSON dari session
+     */
+    public function index()
+    {
+        $rows = session('requests_demo', []);
+        return response()->json($rows);
     }
 }
-
