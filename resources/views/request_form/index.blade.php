@@ -96,10 +96,10 @@ table.data-table thead th.sorting_desc:before {
 
 /*EXPORT EXCEL*/
 .dt-buttons .buttons-excel {
-    background:#1e7e34 !important; 
+    background:#1e7e34 !important;
     color:#fff !important;
-    font-size:10px !important;   
-    padding:3px 7px !important;    
+    font-size:10px !important;
+    padding:3px 7px !important;
     border-radius:5px !important;
     border:none !important;
 }
@@ -152,7 +152,7 @@ table.data-table thead th.sorting_desc:before {
             <td>{{ $item->type ?? '-' }}</td>
             <td>{{ $item->notes ?? '-' }}</td>
             <td>
-                <a class="link-blue" href="{{ route('form.print',$item->id) }}">Export PDF</a>
+                <a class="link-blue" href="{{ route('form.export.new',$item->id) }}">Export PDF</a>
             </td>
         </tr>
         @endforeach
@@ -171,11 +171,11 @@ $(document).ready(function() {
         info:false,
         autoWidth:false,
 
-        dom:'Brtip', 
+        dom:'Brtip',
 
         buttons:[{
             extend:'excelHtml5',
-            text:'Export Excel', 
+            text:'Export Excel',
             title:'Request_Data'
         }],
 

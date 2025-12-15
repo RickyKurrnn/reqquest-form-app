@@ -16,3 +16,5 @@ Route::get('/form/export-csv', [RequestFormController::class, 'exportCsv'])->nam
 Route::get('/form/{id}/print', [RequestFormController::class, 'print'])->name('form.print');
 Route::get('/form/{id}/export-pdf', [RequestFormController::class, 'exportPdf'])->name('form.export.pdf');
 Route::get('/request-table', [RequestFormController::class, 'index']);
+
+Route::get('/form/{id}/export-form', [RequestFormController::class, 'exportFormPDF'])->name('form.export.new');
