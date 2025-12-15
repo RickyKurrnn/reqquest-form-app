@@ -7,6 +7,12 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/form/create', [RequestFormController::class, 'create']);
+// List (index)
+Route::get('/form', [RequestFormController::class, 'index'])->name('form.index');
+Route::get('/form/create', [RequestFormController::class, 'create'])->name('form.create');
 Route::post('/form/store', [RequestFormController::class, 'store'])->name('form.store');
 
+Route::get('/form/export-csv', [RequestFormController::class, 'exportCsv'])->name('form.export.csv');
+Route::get('/form/{id}/print', [RequestFormController::class, 'print'])->name('form.print');
+Route::get('/form/{id}/export-pdf', [RequestFormController::class, 'exportPdf'])->name('form.export.pdf');
+Route::get('/request-table', [RequestFormController::class, 'index']);
