@@ -18,3 +18,6 @@ Route::get('/form/{id}/export-pdf', [RequestFormController::class, 'exportPdf'])
 Route::get('/request-table', [RequestFormController::class, 'index']);
 
 Route::get('/form/{id}/export-form', [RequestFormController::class, 'exportFormPDF'])->name('form.export.new');
+Route::get('/form/data', [RequestFormController::class, 'getData'])->name('form.data');
+Route::get('/form/list', [RequestFormController::class, 'viewList'])->name('form.list');
+Route::get('/form/search', [RequestFormController::class, 'searchDataForm'])->name('form.search');

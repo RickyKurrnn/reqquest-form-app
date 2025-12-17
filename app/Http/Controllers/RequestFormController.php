@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Schema;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Carbon\Carbon;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Exception;
 
 
 class RequestFormController extends Controller
@@ -24,6 +25,11 @@ class RequestFormController extends Controller
 
         // kembalikan view index (resources/views/request_form/index.blade.php)
         return view('request_form.index', compact('forms'));
+    }
+
+    public function viewList()
+    {
+        return view('request_form.list');
     }
 
     /**
@@ -189,6 +195,112 @@ class RequestFormController extends Controller
         };
 
         return new StreamedResponse($callback, 200, $headers);
+    }
+
+    public function getData()
+    {
+        try{
+
+            $dataForm = RequestForm::orderBy('request_date', 'desc')->get();
+
+            $data = array();
+
+            $no = 1;
+
+            foreach($dataForm as $form){
+                $row = array();
+                $row[] = $no++;
+                $row[] = $form->request_date;
+                $row[] = $form->task_received ?? '-';
+                $row[] = $form->application_name ?? '-';
+                $row[] = $form->task ?? '-';
+                $row[] = $form->requested_by_name ?? '-';
+                $row[] = $form->approved_by_name ?? '-';
+                $row[] = $form->executed_by_name ?? '-';
+                $row[] = $form->acknowledged_by_name ?? '-';
+                $row[] = $form->type ?? '-';
+                $row[] = '<a href="' . route('form.export.new', $form->id) . '"class="btn btn-success">Export PDF</a>';
+                $data[] = $row;
+            }
+
+            return response()->json([
+                "sql" => $dataForm,
+                "draw" => -1,
+                "recordsTotal" => count($data),
+                "recordsFiltered" => count($data),
+                "data" => $data
+            ]);
+
+        } catch (Exception $ex){
+            return response()->json([
+                'code' => $ex->getCode(),
+                'message' => $ex->getMessage()
+            ]);
+        }
+    }
+
+    public function searchDataForm(Request $request)
+    {
+        try {
+
+            $query = RequestForm::query();
+
+            // FILTERS
+            if ($request->filled('request_date')) {
+                $query->whereDate('request_date', $request->request_date);
+            }
+
+            if ($request->filled('application')) {
+                $query->where('application_name', 'like', '%' . $request->application . '%');
+            }
+
+            if ($request->filled('requestor')) {
+                $query->where('requested_by_name', 'like', '%' . $request->requestor . '%');
+            }
+
+            if ($request->filled('status')) {
+                $query->where('type', 'like', '%' . $request->status . '%');
+            }
+
+            $dataForm = $query
+                ->orderBy('request_date', 'desc')
+                ->get();
+
+            // FORMAT FOR DATATABLES
+            $data = array();
+            $no = 1;
+
+            foreach ($dataForm as $form) {
+                $row = [];
+                $row[] = $no++;
+                $row[] = $form->request_date;
+                $row[] = $form->task_received ?? '-';
+                $row[] = $form->application_name ?? '-';
+                $row[] = $form->task ?? '-';
+                $row[] = $form->requested_by_name ?? '-';
+                $row[] = $form->approved_by_name ?? '-';
+                $row[] = $form->executed_by_name ?? '-';
+                $row[] = $form->acknowledged_by_name ?? '-';
+                $row[] = $form->type ?? '-';
+                $row[] = '<a href="' . route('form.export.new', $form->id) . '" class="btn btn-success btn-sm">
+                            Export PDF
+                        </a>';
+
+                $data[] = $row;
+            }
+
+            return response()->json([
+                "draw" => intval($request->draw),
+                "recordsTotal" => $dataForm->count(),
+                "recordsFiltered" => $dataForm->count(),
+                "data" => $data
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => $e->getMessage()
+            ], 500);
+        }
     }
 
     /**
