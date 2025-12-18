@@ -210,7 +210,7 @@ class RequestFormController extends Controller
             foreach($dataForm as $form){
                 $row = array();
                 $row[] = $no++;
-                $row[] = $form->request_date;
+                $row[] = $form->request_date? Carbon::parse($form->request_date)->locale('id')->translatedFormat('d F Y'): '-';
                 $row[] = $form->task_received ?? '-';
                 $row[] = $form->application_name ?? '-';
                 $row[] = $form->task ?? '-';
@@ -273,7 +273,7 @@ class RequestFormController extends Controller
             foreach ($dataForm as $form) {
                 $row = [];
                 $row[] = $no++;
-                $row[] = $form->request_date;
+                $row[] = $form->request_date? Carbon::parse($form->request_date)->locale('id')->translatedFormat('d F Y'): '-';
                 $row[] = $form->task_received ?? '-';
                 $row[] = $form->application_name ?? '-';
                 $row[] = $form->task ?? '-';

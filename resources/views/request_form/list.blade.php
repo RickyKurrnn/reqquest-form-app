@@ -117,16 +117,20 @@
             autoWidth: false,
             paging: true,
             searching: false,
+            fixedHeader: false,
             order: [],
             columnDefs: [{
-                    targets: [0, 10],
-                    className: 'text-center'
-                }, // No dan Action di tengah
+                    targets: 0,
+                    width: "50px",
+                    className: "text-center"
+                }, // No
                 {
-                    targets: '_all',
-                    className: 'align-middle'
-                } // Semua kolom rata tengah secara vertikal
+                    targets: -1,
+                    width: "120px",
+                    className: "text-center"
+                }, // Action
             ],
+
 
             dom: "<'row'<'col-sm-12'tr>>" +
                 "<'row mt-2'<'col-sm-5'i><'col-sm-7'p>>",
@@ -153,6 +157,10 @@
                     d.status = $('#filter_status').val();
                 }
             }
+        });
+
+        table.on('init draw', function() {
+            table.columns.adjust();
         });
 
         $('#btnFilterListDataTable').on('click', function() {
