@@ -247,7 +247,10 @@ class RequestFormController extends Controller
 
             // FILTERS
             if ($request->filled('request_date')) {
-                $query->whereDate('request_date', $request->request_date);
+                $query->whereBetween('request_date', [
+                    Carbon::parse($request->request_date)->startOfDay(),
+                    Carbon::parse($request->request_date)->endOfDay(),
+                ]);
             }
 
             if ($request->filled('application')) {
