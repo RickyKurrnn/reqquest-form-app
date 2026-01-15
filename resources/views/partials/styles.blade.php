@@ -90,7 +90,7 @@
             position: fixed;
             top: 20px;
             left: 240px;
-            z-index: 1100;
+            z-index: 1040;
             background: #ffffff;
             color: #495057;
             border: 1px solid #dee2e6;

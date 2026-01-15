@@ -8,6 +8,8 @@ class RequestForm extends Model
 {
     protected $fillable = [
         // --- KOLOM UTAMA ---
+        'document_number',
+        'created_by',
         'request_type',
         'application_name',
         'request_date',
@@ -15,7 +17,7 @@ class RequestForm extends Model
         'expectations',
         'type',
         'notes',
-        
+
         // --- 1. REQUESTED BY ---
         'requested_by_name',
         'requested_by_position',
@@ -39,9 +41,17 @@ class RequestForm extends Model
         'acknowledged_by_position',
         'acknowledged_at',               // <--- BARU: Kolom untuk tanggal acknowledged
         'acknowledged_by_signature_path',// <--- BARU: Kolom untuk path file signature
-        
+
         // --- 5. KOLOM LAIN ---
         'attachment_path',               // <--- BARU: Kolom untuk path file attachment
+        'status',
+    ];
+
+    protected $casts = [
+        'requested_at'     => 'datetime',
+        'approved_at'      => 'datetime',
+        'executed_at'      => 'datetime',
+        'acknowledged_at'  => 'datetime',
     ];
 
     public function signatures()

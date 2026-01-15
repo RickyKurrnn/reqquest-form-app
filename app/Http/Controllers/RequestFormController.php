@@ -11,6 +11,7 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 use Carbon\Carbon;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Exception;
+use Illuminate\Support\Facades\Auth;
 
 
 class RequestFormController extends Controller
@@ -50,6 +51,7 @@ class RequestFormController extends Controller
             // --- Kolom Utama ---
             'request_type' => 'required',
             'application_name' => 'required',
+            'document_number' => 'required',
             'request_date' => 'required|date',
             'current_condition' => 'nullable',
             'expectations' => 'nullable',
@@ -86,6 +88,7 @@ class RequestFormController extends Controller
         $form = RequestForm::create([
             'request_type' => $validatedData['request_type'],
             'application_name' => $validatedData['application_name'],
+            'document_number' => $validatedData['document_number'],
             'request_date' => $validatedData['request_date'],
             'existing_condition' => $validatedData['current_condition'] ?? null,
             'expectations' => $validatedData['expectations'] ?? null,
@@ -111,6 +114,9 @@ class RequestFormController extends Controller
             'acknowledged_by_position' => $validatedData['ack_position'] ?? null,
             'acknowledged_at' => $validatedData['ack_date'] ?? null,
             'acknowledged_by_signature_path' => "-",
+
+            'created_by' => Auth::id(),
+            'status' => "Show",
 
             // Attachment
             'attachment_path' => $request->hasFile('attachment')
@@ -201,7 +207,10 @@ class RequestFormController extends Controller
     {
         try{
 
-            $dataForm = RequestForm::orderBy('request_date', 'desc')->get();
+            $dataForm = RequestForm::where('created_by', auth()->id())
+            ->orderBy('request_date', 'desc')
+            ->where('status', 'Show')
+            ->get();
 
             $data = array();
 
@@ -211,15 +220,31 @@ class RequestFormController extends Controller
                 $row = array();
                 $row[] = $no++;
                 $row[] = $form->request_date? Carbon::parse($form->request_date)->locale('id')->translatedFormat('d F Y'): '-';
-                $row[] = $form->task_received ?? '-';
+                // $row[] = $form->task_received ?? '-';
                 $row[] = $form->application_name ?? '-';
-                $row[] = $form->task ?? '-';
+                $row[] = $form->document_number ?? '-';
+                // $row[] = $form->task ?? '-';
                 $row[] = $form->requested_by_name ?? '-';
                 $row[] = $form->approved_by_name ?? '-';
                 $row[] = $form->executed_by_name ?? '-';
                 $row[] = $form->acknowledged_by_name ?? '-';
                 $row[] = $form->type ?? '-';
-                $row[] = '<a href="' . route('form.export.new', $form->id) . '"class="btn btn-success">Export PDF</a>';
+                // $row[] = '<a href="' . route('form.export.new', $form->id) . '"class="btn btn-success">Export PDF</a>';
+                $row[] = '<button
+                            type="button"
+                            class="btn btn-primary btn-sm"
+                            data-id="' . $form->id . '"
+                            onclick="modalShow(this)">
+                            <i class="fa fa-eye"></i>
+                        </button>
+
+                        <button
+                            type="button"
+                            class="btn btn-danger btn-sm"
+                            data-id="' . $form->id . '"
+                            onclick="deleteData(this)">
+                            <i class="fa fa-trash"></i>
+                        </button>';
                 $data[] = $row;
             }
 
@@ -243,7 +268,10 @@ class RequestFormController extends Controller
     {
         try {
 
-            $query = RequestForm::query();
+            // $query = RequestForm::query();
+            $query = RequestForm::query()
+            ->where('created_by', Auth::id())
+            ->where('status', 'Show');
 
             // FILTERS
             if ($request->filled('request_date')) {
@@ -277,17 +305,33 @@ class RequestFormController extends Controller
                 $row = [];
                 $row[] = $no++;
                 $row[] = $form->request_date? Carbon::parse($form->request_date)->locale('id')->translatedFormat('d F Y'): '-';
-                $row[] = $form->task_received ?? '-';
+                // $row[] = $form->task_received ?? '-';
                 $row[] = $form->application_name ?? '-';
-                $row[] = $form->task ?? '-';
+                $row[] = $form->document_number ?? '-';
+                // $row[] = $form->task ?? '-';
                 $row[] = $form->requested_by_name ?? '-';
                 $row[] = $form->approved_by_name ?? '-';
                 $row[] = $form->executed_by_name ?? '-';
                 $row[] = $form->acknowledged_by_name ?? '-';
                 $row[] = $form->type ?? '-';
-                $row[] = '<a href="' . route('form.export.new', $form->id) . '" class="btn btn-success btn-sm">
-                            Export PDF
-                        </a>';
+                // $row[] = '<a href="' . route('form.export.new', $form->id) . '" class="btn btn-success btn-sm">
+                //             Export PDF
+                //         </a>';
+                $row[] = '<button
+                            type="button"
+                            class="btn btn-primary btn-sm"
+                            data-id="' . $form->id . '"
+                            onclick="modalShow(this)">
+                            <i class="fa fa-eye"></i>
+                        </button>
+
+                        <button
+                            type="button"
+                            class="btn btn-danger btn-sm"
+                            data-id="' . $form->id . '"
+                            onclick="deleteData(this)">
+                            <i class="fa fa-trash"></i>
+                        </button>';
 
                 $data[] = $row;
             }
@@ -345,6 +389,63 @@ class RequestFormController extends Controller
 
         // return $pdf->download('laporan.pdf');
         return $pdf->stream('form.pdf');
+    }
+
+    public function detailForm($id)
+    {
+        $data = RequestForm::findOrFail($id);
+
+        return response()->json([
+            'request_type' => $data->request_type,
+            'document_number' => $data->document_number,
+            'application_name' => $data->application_name,
+            'request_date' => $data->request_date,
+            'existing_condition' => $data->existing_condition,
+            'expectations' => $data->expectations,
+            'type' => $data->type,
+            'notes' => $data->notes,
+
+            'requested_by_name' => $data->requested_by_name,
+            'requested_by_position' => $data->requested_by_position,
+            'requested_at' => optional($data->created_at)->format('d F Y'),
+
+            'approved_by_name' => $data->approved_by_name,
+            'approved_by_position' => $data->approved_by_position,
+            'approved_at' => optional($data->approved_at)->format('d F Y'),
+
+            'executed_by_name' => $data->executed_by_name,
+            'executed_by_position' => $data->executed_by_position,
+            'executed_at' => optional($data->executed_at)->format('d F Y'),
+
+            'acknowledged_by_name' => $data->acknowledged_by_name,
+            'acknowledged_by_position' => $data->acknowledged_by_position,
+            'acknowledged_at' => optional($data->acknowledged_at)->format('d F Y'),
+        ]);
+    }
+
+    public function updateForm(Request $request, $id)
+    {
+        RequestForm::where('id', $id)->update([
+            'request_type' => $request->request_type,
+            'document_number' => $request->document_number,
+            'application_name' => $request->application_name,
+            'request_date' => $request->request_date,
+            'existing_condition' => $request->existing_condition,
+            'expectations' => $request->expectations,
+            'type' => $request->type,
+            'notes' => $request->notes,
+        ]);
+
+        return response()->json(['success' => true]);
+    }
+
+    public function softDelete(Request $request, $id)
+    {
+        RequestForm::where('id', $id)->update([
+            'status' => 'Hide'
+        ]);
+
+        return response()->json(['success' => true]);
     }
 
 }

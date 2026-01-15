@@ -183,7 +183,7 @@
             </tr>
         </table>
 
-        <div class="mb-2" style="margin-top: 1.5em;">Doc Number: {{ $form->id }}</div>
+        <div class="mb-2" style="margin-top: 1.5em;">Doc Number: {{ $form->document_number }}</div>
         <div class="mb-2" style="margin-top: 1.5em;">Application Name: {{ $form->application_name }}</div>
 
         <div class="mt-3" style="margin-top: 1.5em;">This form is to request change(s) of the following data:</div>

@@ -14,10 +14,12 @@ return new class extends Migration
         Schema::create('request_forms', function (Blueprint $table) {
 
             // Kolom ID Otomatis
-            $table->bigIncrements('id'); // Document Number
+            $table->bigIncrements('id');
 
             // --- FORM MAIN FIELDS ---
             $table->string('request_type');
+            $table->string('document_number');
+            $table->foreignId('created_by')->constrained('users')->cascadeOnDelete();
             $table->string('application_name');
             $table->date('request_date');
             $table->text('existing_condition')->nullable();
@@ -65,6 +67,8 @@ return new class extends Migration
             $table->string('attachment_path')->nullable();
             //=================================================================
 
+            // STATUS
+            $table->enum('status', ['Show', 'Hide']);
 
             // Timestamps standar Laravel
             $table->timestamps();
